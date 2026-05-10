@@ -59,9 +59,13 @@ jobs:
       - name: Setup kubectl
         uses: azure/setup-kubectl@v3
 
+      - name: Configure kubeconfig
+        run: |
+          mkdir -p $HOME/.kube
+          echo "${{ secrets.KUBECONFIG }}" | base64 -d > $HOME/.kube/config
+          chmod 600 $HOME/.kube/config
+
       - name: Deploy to Kubernetes
         run: |
           echo "Applying Kubernetes manifests..."
           kubectl apply -f k8s/deployment.yaml
-        env:
-          KUBECONFIG: ${{ secrets.KUBECONFIG }}
